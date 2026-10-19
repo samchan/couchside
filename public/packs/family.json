@@ -1,0 +1,16 @@
+{
+  "name": "Family gathering",
+  "description": "Holidays, reunions and big dinners. Pick one person as the host (Grandma is a classic) and see who knows them best.",
+  "questions": [
+    { "text": "What's the host's signature dish?", "kind": "text" },
+    { "text": "Who in the family calls the host the most?", "kind": "text" },
+    { "text": "What's the host's favourite family memory?", "kind": "text" },
+    { "text": "What does the host always say at dinner?", "kind": "mc", "options": ["Eat more!", "Who wants seconds?", "Phones away", "When are you getting married?"] },
+    { "text": "The host's ideal holiday is…", "kind": "mc", "options": ["Beach", "Cruise", "Staying home", "Visiting family"] },
+    { "text": "Which decade was the host's favourite?", "kind": "mc", "options": ["60s", "70s", "80s", "90s"] },
+    { "text": "The family's unofficial motto", "kind": "funny" },
+    { "text": "What's really in the secret family recipe", "kind": "funny" },
+    { "text": "The title of the family reality show", "kind": "funny" },
+    { "text": "How many people are at this gathering today?", "kind": "number", "is_final": true }
+  ]
+}

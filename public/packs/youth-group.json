@@ -1,0 +1,16 @@
+{
+  "name": "Youth group",
+  "description": "For teen fellowship or a youth night. Set the host name to your leader. Mostly funny rounds, plus a few about the leader.",
+  "questions": [
+    { "text": "What's the leader's go-to snack at youth night?", "kind": "mc", "options": ["Chips", "Pizza", "Candy", "They steal ours"] },
+    { "text": "Which worship song would the leader pick every single week?", "kind": "text" },
+    { "text": "What was the leader like at our age?", "kind": "mc", "options": ["Teacher's pet", "Class clown", "Quiet one", "Always late"] },
+    { "text": "What's the leader's most-used phrase?", "kind": "text" },
+    { "text": "Which Bible character would the leader want to grab lunch with?", "kind": "text" },
+    { "text": "The worst possible snack for a youth retreat", "kind": "funny" },
+    { "text": "Rename this youth group, badly", "kind": "funny" },
+    { "text": "What really happened to the last ping-pong ball", "kind": "funny" },
+    { "text": "An excuse for being late to youth group that has never been used", "kind": "funny" },
+    { "text": "How many years has the leader been leading this group?", "kind": "number", "is_final": true }
+  ]
+}

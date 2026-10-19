@@ -1,0 +1,4 @@
+# Admin + TV login PIN (6+ digits recommended). Required.
+ADMIN_PIN=
+# Optional: API key for the AI provider picked in Admin -> Settings. Overrides a key saved there.
+AI_API_KEY=

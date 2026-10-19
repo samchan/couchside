@@ -1,0 +1,16 @@
+{
+  "name": "Birthday",
+  "description": "How well does everyone know the birthday star? Edit the questions to fit them, and set the host name to the birthday person (or their parents).",
+  "questions": [
+    { "text": "What's the birthday star's favourite cake flavour?", "kind": "mc", "options": ["Chocolate", "Vanilla", "Red velvet", "Ice cream cake"] },
+    { "text": "What would the birthday star do with a free Saturday?", "kind": "mc", "options": ["Sleep in", "Go outside", "Video games", "See friends"] },
+    { "text": "Which superpower would the birthday star pick?", "kind": "mc", "options": ["Flying", "Invisibility", "Super speed", "Teleporting"] },
+    { "text": "What's the birthday star's favourite food?", "kind": "text" },
+    { "text": "What's the birthday star's favourite show or movie right now?", "kind": "text" },
+    { "text": "What's the easiest way to make the birthday star laugh?", "kind": "text" },
+    { "text": "The worst gift you could give the birthday star", "kind": "funny" },
+    { "text": "What the birthday star will be famous for in 20 years", "kind": "funny" },
+    { "text": "A new rule the birthday star would make if they ran the world", "kind": "funny" },
+    { "text": "How many candles are on the cake this year?", "kind": "number", "is_final": true }
+  ]
+}

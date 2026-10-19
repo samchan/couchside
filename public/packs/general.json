@@ -1,0 +1,16 @@
+{
+  "name": "General party",
+  "description": "A mix for any get-together. Guess what the host would say, plus a few just-for-laughs rounds.",
+  "questions": [
+    { "text": "What does the host order at a coffee shop?", "kind": "mc", "options": ["Black coffee", "Latte", "Tea", "Something with whipped cream"] },
+    { "text": "What would the host grab first in a fire?", "kind": "mc", "options": ["Phone", "Pet", "Photo albums", "Snacks"] },
+    { "text": "Is the host a morning person?", "kind": "mc", "options": ["Up before the alarm", "Snoozes once", "Snoozes five times", "What is morning?"] },
+    { "text": "What's the host's go-to comfort food?", "kind": "text" },
+    { "text": "What's the host's most-used emoji?", "kind": "text" },
+    { "text": "What's a hobby the host has picked up and dropped?", "kind": "text" },
+    { "text": "Worst possible name for a pet goldfish", "kind": "funny" },
+    { "text": "The real reason the host is late", "kind": "funny" },
+    { "text": "A terrible slogan for this party", "kind": "funny" },
+    { "text": "How many years has the host lived at their current address?", "kind": "number", "is_final": true }
+  ]
+}

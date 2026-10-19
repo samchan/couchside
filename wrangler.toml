@@ -1,0 +1,24 @@
+# Couchside: one Worker serves the pages (public/) and the API (/api/*), backed by one D1 database.
+# Tables are created automatically on the first request, so there is no migration step.
+name = "couchside"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+workers_dev = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+html_handling = "drop-trailing-slash"
+run_worker_first = ["/api/*"]
+
+# `wrangler deploy` (and the Deploy to Cloudflare button) creates this database for you.
+[[d1_databases]]
+binding = "DB"
+database_name = "couchside"
+
+# Optional: lets hosts pick "Workers AI" for answer matching in Admin -> Settings.
+[ai]
+binding = "AI"
+
+[observability]
+enabled = true

@@ -1,0 +1,6 @@
+[
+  { "file": "general.json", "name": "General party" },
+  { "file": "birthday.json", "name": "Birthday" },
+  { "file": "youth-group.json", "name": "Youth group" },
+  { "file": "family.json", "name": "Family gathering" }
+]
