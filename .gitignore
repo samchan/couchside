@@ -2,3 +2,4 @@ node_modules
 .dev.vars
 .wrangler
 wrangler.test.toml
+wrangler.demo.toml
