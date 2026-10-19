@@ -121,7 +121,10 @@ async function getAiKey(env) {
   const r = await env.DB.prepare("SELECT v FROM settings WHERE k = 'ai_key'").first();
   return r ? r.v : '';
 }
-const publicCfg = (cfg) => { const { ai, ...rest } = cfg; return rest; };
+const publicCfg = (cfg, env) => { const { ai, ...rest } = cfg; return { ...rest, demo: isDemo(env) }; };
+// Demo mode (env DEMO = "1", for a public try-it-out server): AI is locked off and a cron
+// trigger resets everything hourly. See demo/README.md.
+const isDemo = (env) => env && env.DEMO === '1';
 const hostLabel = (cfg) => { const n = cfg.host_name || 'the host'; return n.charAt(0).toUpperCase() + n.slice(1); };
 
 function validateCfg(input, cur) {
@@ -158,6 +161,7 @@ function validateCfg(input, cur) {
 }
 
 async function saveSettings(env, body) {
+  if (isDemo(env)) { delete body.ai_key; if (body.settings) delete body.settings.ai; }
   const cur = await getCfg(env);
   const next = validateCfg(body.settings || {}, cur);
   const stmts = [env.DB.prepare("INSERT INTO settings (k, v) VALUES ('config', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(JSON.stringify(next))];
@@ -393,7 +397,7 @@ async function playerState(env, g, me) {
   const sc = computeScores(g, d);
   const st = {
     ver: g.ver, phase: g.phase, joins_open: !!g.joins_open, server_now: now(),
-    cfg: publicCfg(d.cfg),
+    cfg: publicCfg(d.cfg, env),
     me: { id: me.id, name: me.name },
     prompts: d.regular.map((p) => ({ id: p.id, text: p.text, kind: p.kind, options: p.options })),
     my: { answers: {}, votes: {}, chips: {}, wager: null },
@@ -444,7 +448,7 @@ async function tvState(env, g, d) {
   const sc = computeScores(g, d);
   const st = {
     ver: g.ver, key: stateKey(g), phase: g.phase, join_code: g.join_code, joins_open: !!g.joins_open,
-    cfg: publicCfg(d.cfg),
+    cfg: publicCfg(d.cfg, env),
     prompt_count: d.regular.length,
     has_final: !!d.finalP,
     vote_prompt_count: d.regular.filter(votable).length,
@@ -468,7 +472,7 @@ async function tvState(env, g, d) {
 async function adminState(env, g) {
   const d = await loadAll(env);
   const base = await tvState(env, g, d); // one load, not two
-  base.cfg = d.cfg; // admin also sees the AI provider settings (never the key itself)
+  base.cfg = { ...d.cfg, demo: isDemo(env) }; // admin also sees the AI provider settings (never the key itself)
   const key = await getAiKey(env);
   base.ai_key = { set: !!key, hint: key ? '\u2026' + key.slice(-4) : '', from_env: !!env.AI_API_KEY };
   const st = await env.DB.prepare("SELECT v FROM settings WHERE k = 'ai_status'").first();
@@ -732,17 +736,21 @@ async function wager(req, env, g, me) {
 // ---------- admin actions ----------
 async function adminLogin(req, env) {
   const body = await readBody(req);
+  if (isDemo(env)) return J({ token: await newAdminSession(env) }); // demo server: no PIN
   if (!env.ADMIN_PIN || String(env.ADMIN_PIN).length < 4) fail('Set an ADMIN_PIN secret first: Cloudflare dashboard → Workers → couchside → Settings → Variables and secrets (or: npx wrangler secret put ADMIN_PIN)', 503);
   if (await limited(env, 'pin:' + ip(req), 10, 600)) fail('Too many tries. Wait 10 minutes.', 429);
   const ok = safeEq(await sha256(String(body.pin || '')), await sha256(String(env.ADMIN_PIN)));
   if (!ok) fail('Wrong PIN', 403);
+  return J({ token: await newAdminSession(env) });
+}
+async function newAdminSession(env) {
   const tok = randHex(24);
   await env.DB.batch([
     env.DB.prepare('DELETE FROM admin_sessions WHERE exp < ?').bind(now()),
     env.DB.prepare('DELETE FROM rl WHERE exp < ?').bind(Math.floor(now() / 1000)),
     env.DB.prepare('INSERT INTO admin_sessions (token_hash, exp) VALUES (?, ?)').bind(await sha256(tok), now() + 36 * 3600 * 1000),
   ]);
-  return J({ token: tok });
+  return tok;
 }
 
 async function savePrompts(env, body, g) {
@@ -997,7 +1005,7 @@ async function api(req, env, url) {
 
   if (path === '/api/state' && method === 'GET') {
     const me = await playerFrom(req, env);
-    if (!me) return J({ ver: g.ver, phase: g.phase, joins_open: !!g.joins_open, joined: false, cfg: publicCfg(await getCfg(env)) });
+    if (!me) return J({ ver: g.ver, phase: g.phase, joins_open: !!g.joins_open, joined: false, cfg: publicCfg(await getCfg(env), env), join_code: isDemo(env) ? g.join_code : undefined });
     if (url.searchParams.get('v') === String(g.ver)) return J({ same: true, ver: g.ver });
     return J(await playerState(env, g, me));
   }
@@ -1013,6 +1021,7 @@ async function api(req, env, url) {
   }
 
   if (path === '/api/admin/login' && method === 'POST') return adminLogin(req, env);
+  if (path === '/api/info' && method === 'GET') return J({ demo: isDemo(env) });
 
   if (path.startsWith('/api/admin/')) {
     await requireAdmin(req, env);
@@ -1022,6 +1031,7 @@ async function api(req, env, url) {
     if (path === '/api/admin/tv' && method === 'GET') return J(await tvState(env, g));
     if (path === '/api/admin/action' && method === 'POST') {
       const body = await readBody(req);
+      if (body.action === 'ai_test' && isDemo(env)) return J({ ok: false, error: 'AI is turned off on the demo server. Deploy your own copy to try it.' });
       if (body.action === 'ai_test') {
         try { return J(await aiTest(env, (await getCfg(env)), await getAiKey(env))); }
         catch (e) { return J({ ok: false, error: String(e && e.message || e).slice(0, 300) }); }
@@ -1051,7 +1061,22 @@ function ensureSchema(env) {
   return schemaReady;
 }
 
+// Demo server: wipe players, answers, settings and questions back to the starter pack.
+async function demoReset(env) {
+  await ensureSchema(env);
+  await env.DB.batch([
+    ...['answers', 'votes', 'chips', 'wagers', 'clusters', 'players', 'prompts', 'admin_sessions', 'rl'].map((t) => env.DB.prepare(`DELETE FROM ${t}`)),
+    env.DB.prepare('DELETE FROM settings'),
+    env.DB.prepare("UPDATE game SET phase = 'answer', reveal_idx = 0, reveal_step = 0, final_deadline = NULL, step_deadline = NULL, joins_open = 1 WHERE id = 1"),
+    ...seedStatements(env.DB),
+    bump(env),
+  ]);
+}
+
 export default {
+  async scheduled(event, env, ctx) {
+    if (isDemo(env)) ctx.waitUntil(demoReset(env));
+  },
   async fetch(req, env) {
     const url = new URL(req.url);
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);

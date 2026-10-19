@@ -61,7 +61,7 @@
       applyCfg(S.cfg, PRINT ? 'poster' : 'TV');
       render();
     } catch (e) {
-      if (e.status === 401) { token = null; store.del('ap_admin'); S = null; render(true); }
+      if (e.status === 401) { token = null; store.del('ap_admin'); S = null; render(true); demoLogin().then((t) => { if (t) { token = t; load(true); } }); }
     }
   }
 
@@ -524,7 +524,7 @@
   }
 
   render(true);
-  load(true);
+  if (token) load(true); else demoLogin().then((t) => { if (t) { token = t; load(true); } });
   // 2s while the TV is driving the reveal or final, 4s otherwise; paused while the tab is hidden
   (function tick() {
     const fast = S && (S.phase === 'reveal' || S.phase === 'final');

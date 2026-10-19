@@ -200,3 +200,4 @@ body.tv { overflow: hidden; }
 .swatch { width: 44px; height: 44px; border: 2px solid var(--ink); border-radius: 12px; padding: 0; cursor: pointer; }
 .code { font-family: ui-monospace, Menlo, monospace; font-size: .85rem; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px; white-space: pre-wrap; word-break: break-word; }
 .pz-mascot { width: 2.2in; height: 2.2in; flex: none; }
+.demo-badge { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 50; background: var(--ink); color: var(--paper); font-size: .78rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; pointer-events: none; white-space: nowrap; }

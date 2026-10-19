@@ -1,0 +1,24 @@
+# The public demo at https://couchside.chikin-tech.com (deploy: npx wrangler deploy -c demo/wrangler.toml)
+# DEMO = "1" turns off the admin PIN and AI, and the hourly cron wipes everything back to the starter pack.
+# Never set DEMO on a game you actually host: anyone could run it.
+name = "couchside-demo"
+main = "../src/index.js"
+compatibility_date = "2026-06-01"
+workers_dev = false
+routes = [{ pattern = "couchside.chikin-tech.com", custom_domain = true }]
+
+[vars]
+DEMO = "1"
+
+[triggers]
+crons = ["0 * * * *"]
+
+[assets]
+directory = "../public"
+binding = "ASSETS"
+html_handling = "drop-trailing-slash"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "couchside-demo"

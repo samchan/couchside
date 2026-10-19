@@ -6,6 +6,16 @@ No app, no accounts, and it runs on Cloudflare's free plan.
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/samchan/couchside)
 
+## Try the demo
+
+Open these side by side (the TV on a laptop, Play on your phone):
+
+- **TV:** https://couchside.chikin-tech.com/tv
+- **Play (phone):** https://couchside.chikin-tech.com/play
+- **Host controls:** https://couchside.chikin-tech.com/admin
+
+The demo has no PIN, everyone on it shares one game, and it resets to the starter questions every hour. AI matching is off there. Your own copy is PIN-protected.
+
 | TV | Phone | Host settings |
 |---|---|---|
 | ![TV reveal](docs/tv-reveal.png) | ![Phone voting](docs/phone-vote.png) | ![Admin settings](docs/admin-settings.png) |
@@ -104,6 +114,10 @@ Adding a provider is one function in [`src/ai.js`](src/ai.js).
 - The admin PIN is compared in constant time and rate-limited (10 tries / 10 min per IP). Log in on your phone and the TV before the party: sessions last 36 hours.
 - Names and answers are length-capped and rendered as plain text only. CSP is `script-src 'self'` (the QR library is vendored).
 - **Admin → Players → remove** kicks someone and deletes their answers and votes.
+
+## Run your own public demo
+
+`demo/wrangler.toml` is the config for the demo above. `DEMO = "1"` removes the PIN, turns AI off and resets everything hourly. Change the domain and run `npx wrangler deploy -c demo/wrangler.toml`. Never set `DEMO` on a game you actually host.
 
 ## Develop
 

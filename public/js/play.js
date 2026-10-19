@@ -81,6 +81,7 @@
   }
 
   function joinView() {
+    if (!store.get('ap_code') && S && S.join_code) store.set('ap_code', S.join_code); // demo server only
     const code = store.get('ap_code');
     const hero = h('div', { class: 'hero' }, mascot('bob'), h('h1', null, fancyTitle(CFG.subtitle || CFG.title)));
     if (!code) {

@@ -38,6 +38,7 @@ Question kinds: `mc`, `text` (guess the host), `funny` (votes only), `number` (f
 - **Guest text is rendered with text nodes only** (`h()` never uses innerHTML for data). The only innerHTML is static SVG and the locally generated QR.
 - **AI keys never leave the server.** `publicCfg()` strips `ai`; the key lives in `settings` row `ai_key` or the `AI_API_KEY` secret.
 - **Polling must stay cheap.** Admin actions bump `game.ver`; guest actions bump `game.act`. TV/admin send `?v=<ver.act>`, phones `?v=<ver>`, and get `{same:true}` (2 row reads) when nothing changed. Don't add polling that skips this: a TV open all day polling a full load every 2s used ~5M D1 rows/day, the whole free allowance.
+- **Demo mode (`env.DEMO === "1"`) is only for the public demo** (`demo/wrangler.toml`): no PIN, AI off, hourly wipe via the cron in `scheduled()`. Everything else must keep requiring `ADMIN_PIN`.
 - Don't use other games' names, artwork or branding.
 
 ## Test

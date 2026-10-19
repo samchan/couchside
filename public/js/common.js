@@ -43,6 +43,11 @@ function applyCfg(cfg, suffix) {
   CFG = cfg;
   document.documentElement.style.setProperty('--accent', cfg.accent || '#FFCF33');
   document.title = cfg.title + (suffix ? ' \u00b7 ' + suffix : '');
+  let badge = document.getElementById('demo-badge');
+  if (cfg.demo && !badge) {
+    badge = h('div', { id: 'demo-badge', class: 'demo-badge noprint' }, 'Demo \u00b7 everyone shares one game \u00b7 resets every hour');
+    document.body.append(badge);
+  } else if (!cfg.demo && badge) badge.remove();
 }
 const hostName = () => CFG.host_name || 'the host';
 const HostName = () => { const n = hostName(); return n.charAt(0).toUpperCase() + n.slice(1); };
@@ -109,6 +114,17 @@ const HOST_LINES = [
   () => `${HostName()} has spoken\u2026`,
 ];
 const hostLine = (idx) => HOST_LINES[idx % HOST_LINES.length]() + ' \ud83e\udd41';
+
+// Demo server: TV and admin log in by themselves (no PIN). Returns a token or null.
+async function demoLogin() {
+  try {
+    const info = await call('/api/info');
+    if (!info.demo) return null;
+    const r = await call('/api/admin/login', { body: {} });
+    store.set('ap_admin', r.token);
+    return r.token;
+  } catch { return null; }
+}
 
 // Grand finale timing, shared by the TV (animation) and phones (hold back the result until the winner is out).
 function finaleTimes(n) {

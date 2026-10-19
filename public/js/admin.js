@@ -18,7 +18,7 @@
       const st = await call('/api/admin/state' + v, { headers: hdr() });
       if (st.same) return;
       S = st; applyCfg(S.cfg, 'admin'); if (S.phase !== shownPhase) { shownPhase = S.phase; showAnswers = false; } render(); }
-    catch (e) { if (e.status === 401) { token = null; store.del('ap_admin'); render(); } }
+    catch (e) { if (e.status === 401) { token = null; store.del('ap_admin'); render(); demoLogin().then((t) => { if (t) { token = t; load(); } }); } }
   }
 
   async function act(body, okMsg) {
@@ -390,7 +390,7 @@
   }
 
   render();
-  load();
+  if (token) load(); else demoLogin().then((t) => { if (t) { token = t; load(); } });
   setInterval(() => {
     const a = document.activeElement;
     if (a && ['SELECT', 'INPUT', 'TEXTAREA'].includes(a.tagName)) return;
