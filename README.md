@@ -91,9 +91,10 @@ Keys are stored in your D1 database and never sent to any browser (admin shows t
 
 Adding a provider is one function in [`src/ai.js`](src/ai.js).
 
-## Costs
+## What you need
 
-Everything fits in Cloudflare's free plan. The TV, admin and phones poll with a version key and get a 2-row "nothing changed" reply unless something happened, so a TV left open all day costs about 30,000 D1 row reads (the free allowance is 5,000,000 a day). AI providers bill separately on their own accounts.
+- **Cloudflare** (free plan). It's worked well for our parties, and a home or small-group game shouldn't need more.
+- **An AI provider (optional).** If you want AI to help match answers, that provider needs its own account and key. Couchside works fine without one.
 
 ## Fair play
 
